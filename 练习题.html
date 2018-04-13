@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="jquery-1.8.3.js"></script>
+    <style>
+        .bar{
+            border:2px solid red;
+        }
+        .bor{
+            border:2px solid green;
+        }
+        p.ori{
+            color: red;
+            font-size: 24px;
+        }
+        .show{
+            display: none;
+        }
+        .cur{
+            color: #2af!important;
+            font-weight: bold;
+            font-size: 30px!important;
+        }
+        .pxx{
+            background: red;
+        }
+        spec{
+            color: yellow;
+            background: red;
+        }
+    </style>
+</head>
+<body>
+<!--失去焦点-使用JS限制字长-->
+失去焦点时,输入字长>6的时候提示"最大长度为6位！"<br>
+<input type="text" id="input" onblur="dataLen()"/>
+<div class="show">最大长度为6位！</div>
+<!--修改 添加css-->
+<p class="ori">这是一段文字！</p>
+<button class="addClass">点我改文本样式</button>
+<br><br><br>
+<!--只读-->
+<input type="text" id="test" placeholder="请输入内容">
+<button value="只读" onclick="setReadonly();">点我变只读</button>
+<!--ajax获取json-->
+<h2>ajax获取json</h2>
+<button type="button" onclick="getData()">请求数据</button>
+<div id="myDiv"></div>
+<!--2-->
+<select id="box1">
+    <option>----请选择----</option>
+    <option class="pxx">山东省</option>
+    <option text="pxx" value="2">山西省</option>
+</select>
+<select id="box2">
+<!--    <option>-&#45;&#45;请选择-&#45;&#45;</option>
+    <option>淄博</option>
+    <option>潍坊</option>
+    <option>青岛</option>-->
+</select>
+
+<!--下拉框的基本操作-->
+<select id="selectId">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
+
+<br><br><br>
+<!---->
+select:
+<select id="selectBox"></select>
+
+<script>
+    $(document).ready(function () {
+        /*$("input").focus();*/
+        //文本框获取焦点,并添加class:bar;
+        $("#input").focus(function () {
+            $(this).addClass("bar");
+        });
+        //文本框失去焦点,并删除class:bar;
+        $("#input").blur(function () {
+            $(this).addClass("bor");
+        });
+        //添加、修改css样式
+        $(".addClass").click(function () {
+            $("p").addClass("cur");
+
+        })
+        //或者    $("p").css({"color":"yellow","font-size":"14px"});
+        //再或者  document.getElementById("text").style.color="#c917dc"；
+    });
+    //失去焦点时 js限制字长；
+    function dataLen() {
+        var data = $("#input").val().length;
+        if(data >= 1 && data <= 6){
+
+        }else{
+            $(".show").show();
+            setTimeout(function () {
+                $(".show").hide();
+            },3000);
+        };
+    }
+    <!--表单属性-readyOnly-->
+    function setReadonly() {
+        document.getElementById("test").readOnly = true;
+    }
+    //select的基本操作
+    $("#selectId").change(function () {
+        SelectChange();
+        aa();
+    })
+    //jquery设置select的默认值；
+    $("#selectId").find("option[value='2']").attr("selected","true")
+
+    function SelectChange() {
+        var selectText = $("#selectId").find("option:selected").text();
+        console.log(selectText);
+        var selectValue = $("#selectId").val();
+        console.log(selectValue);
+        var selectIndex = $("#selectId").get(0).selectedIndex;
+        console.log(selectIndex);
+        $("#selectId").append("<option value = '6'>6</option>");
+        $("#selectId").find("option[value='4']").remove();
+        $("#selectId").prepend("<option>请选择</option>");//在前面插入一项“请选择”
+        //$("#selectId").empty();//清空select；
+    }
+    //ajax获取json
+    $.ajax({
+        type:"GET",
+        url:"00.json",
+        typeData:"json",
+        data:'{"name":"张国立"}',  //向后台返回数据
+        success:function (data) {  //成功请求
+            console.log(data[0].name);
+            console.log(data[1].email);
+            $("#box").val("pxx");
+            $("#selectId").remove("option[value='4']");
+            $("#box").find("option[text=pxx]").attr("selected","true") //类型为pxx的选中
+            $("#box1").change(function () {
+                $("#box2").empty();
+                var option = $("<option>").val(1).text("淄博");
+                $("#box2").append(option);
+            })
+        },
+        error:function (data) {}, //错误请求
+    })
+
+    $.ajax({
+        type:"GET",
+        url:"02.json",
+        data:{"provice":"山东省"},
+        typeData:"json",
+        success:function (data) {
+            /*$("#selectBox").prepend('<option>---请选择---</option>');
+            $("#selectBox").append("<option value='1'>11</option>")
+            $("#selectBox").append("<option value='2'>22</option>");
+            $("#selectBox").append("<option value='3'>33</option>");
+            $("#selectBox").append("<option value='4'>44</option>");
+            $("#selectBox").find("option:first").addClass("spec");
+            $("#selectBox").find("option[value='2']").attr("selected","selected");//默认选中
+            $("#selectBox option:last").remove();//删除最后一项
+
+            var texts = new Array("111","222","333");
+            var html ='<option>gggg</option>';
+            html+='<option>'+data.first[i].city+'</option>',
+            $("#selectBox").append(html);*/
+
+            //二级联动
+            for(var i = 0;i<data.length;i++){
+                $("#selectBox").prepend('<option>---请选择---</option>');
+            }
+            $("#selectBox").change(function () {
+
+            })
+
+
+        },
+
+        //error:function (data) {//错误请求代码}
+    })
+
+/*
+    function getData() {
+        $.ajax({
+            url:"02.json",
+            type:"GET",
+            typeData:"json",
+            data:{},
+            success:function (rs) {
+                console.log(rs);
+                alert('first'+rs.first[0].city)
+                //ajaxJson();
+            }
+        })
+    }
+*/
+/*
+    function ajaxJson() {
+        var html = '<option>---请选择---</option>';
+        var dataLen = data;
+        if(dataLen){
+           for(var i = 1;i<dataLen.length;i++){
+               html+='<option>'+data.first[i].provice+'</option>'
+           }
+           $("select[name=property]").append(html);
+        }
+    }
+*/
+    //ajax编辑select-option
+/*
+    function getOption() {
+        $.ajax({
+            type:"GET",
+            url:"url",
+            dataType:"json",
+            success:function (msg) {
+                var optionTitle = '<option>--请选择一级属性--</option>';
+                if(msg == "{[]}"){
+                    $("#selectSub").empty();
+                    $("<option>山东省</option>").appendTo("#selectSub");
+                }
+            },
+            error:function (msg) {
+                alert("出错了！")
+            }
+        })
+    }
+*/
+</script>
+</body>
+</html>
